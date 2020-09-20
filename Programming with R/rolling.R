@@ -14,9 +14,9 @@ First_Fun <- function(die, probability){
   #print(rolls)
 }
 
-# Calling roll function for the first dice
+# Calling first function for the first dice
 First_Fun(First_dice, Prob1)
-# Calling roll function for the second dice
+# Calling first function for the second dice
 First_Fun(Second_dice , Prob2)
 
 # Second Function
