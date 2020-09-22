@@ -20,7 +20,7 @@ View(hearts)
 
 # function for shuffling the deck
 shuffle <- function(cards){
-  assign("deck",deck[sample(1:52, size = 52),],envir = globalenv())}
+  assign("deck",cards[sample(1:52, size = 52),], envir = globalenv())}
 
 
 #function for dealing cards to 2 players in hearts
