@@ -20,17 +20,17 @@ View(hearts)
 
 # function for shuffling the deck
 shuffle <- function(cards){
-  cards[sample(1:52, size = 52),]}
+  assign("deck",deck[sample(1:52, size = 52),],envir = globalenv())}
 
 
 #function for dealing cards to 2 players in hearts
 Hearts_Deal <- function(cards){
   cards[1,]
-  assign("Hearts", hearts[-1,], globalenv())}
+  assign("Hearts", hearts[-1,], envir = globalenv())}
 
 #function for dealing cards to 2 players and a dealer in blackjack
 Blackjack_Deal <- function(cards){
   cards[1,]
-  assign("21Deal", blackjack[-1,], globalenv())}
+  assign("21Deal", blackjack[-1,], envir = globalenv())}
 
 
