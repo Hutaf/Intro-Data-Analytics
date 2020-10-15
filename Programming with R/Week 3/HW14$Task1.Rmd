@@ -1,0 +1,145 @@
+---
+title: "LP Brewery"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Probelm Statement
+
+#### Build a report for LP Brewery telling them all the information from their new problem with Dantzig and their previous problem before Dantzig <http://learn.codingdojo.com/m/147/6683/49453>.
+
+##### Recipes for Hopatronics IPA, American Kolsch, and Barrel-Aged Dantzig
+
+  Beverage     | Corn (pounds)  |  Hops (ounces) |  Malt (pounds) |  
+-------------- | -------------  | -------------- | -------------- | 
+Hopatronics IPA|       5        |       4        |        35      |     
+American Kolsch|       15       |       4        |        20      |    
+Dantzig        |       10       |       4        |        15      |     
+   Quantity    |      480       |      160       |       1190
+
+##### Profit bar chart
+```{r beverage, echo=FALSE}
+library("lpSolve")
+f.obj <- c(13, 23, 30)
+barplot(f.obj, main="Profits $", names.arg=c("Hopatronics IPA","American Kolsch", "Dantzig"))
+```
+
+##### Each of the kegs takes the following hours of labor, we have 5 employees full-time
+
+ Beverage      |    Hours  
+-------------- | -------------
+Hopatronics IPA|       5       
+American Kolsch|       10       
+Dantzig        |       20       
+Total hours of labor     | 1200
+
+##### Total hours of labor is 1200, which means each employee has to work 8 hour per day for a month
+#### How can brewer maximize profits? 
+##### 1. Before Dantizig
+```{r lp, echo=FALSE}
+f.obj <- c(13,23)
+# Each row represent Corns, Hops, Malt, Hours.
+f.con <- matrix(c(5,15,
+                  4,4,
+                  35,20,
+                  5, 10), nrow = 4, byrow = TRUE)
+
+# Create a list of directions
+f.dir <- c("<=","<=","<=", "<=")
+
+# Create a list of right hand side for the constraints
+f.rhs <- c(480,160,1190, 1200)
+
+sol <- lp("max", f.obj, f.con, f.dir, f.rhs,compute.sens = TRUE)
+
+```
+ * Plotting the constraints
+```{r}
+library(ggplot2)
+ggplot(data.frame(x = c(0, 100)), aes(x = x)) + 
+  stat_function(fun = function(x) {(480 - 5*x)/15}, aes(color = "Corns")) + 
+  stat_function(fun = function(x) {(160 - 4*x)/4 }, aes(color = "Hops")) + 
+  stat_function(fun = function(x) {(1190 - 35*x)/20 }, aes(color = "Malts")) + 
+  stat_function(fun = function(x) {(1200 - 5*x)/10 }, aes(color = "Hours")) + 
+  theme_bw() + 
+  scale_color_discrete(name = "Constraints")
+```
+ 
+
+ * The optimum value of Hopatronics IPA and American Kolsch to maximize profit
+```{r sol, echo=FALSE}
+# Compute optimum value for each beer
+Best_sol <- sol$solution
+names(Best_sol) <- c("Hopatronics IPA", "American Kolsch") 
+print(Best_sol)
+```
+ * The maximum profit at optimal point 
+```{r obj, echo=FALSE}
+cat("Total profit: ", sol$objval, sep="")
+```
+ * The duals of constraints and reduced costs of variables
+```{r duals, echo=FALSE}
+sol$duals
+```
+ * The sensitivity analysis of LP 
+```{r sa, echo=FALSE}
+sol$duals.from
+sol$duals.to
+sol$sens.coef.from
+sol$sens.coef.to
+```
+
+ 
+##### 2. After Dantizig
+##### After LP Brewery coming up with a hot new brew called The Barrel-Aged Dantzig. They had to think about allocating its personnel to the different manufacturing processes, and the following is an analysis report after adding the new brew. 
+ 
+```{r lp1, echo=FALSE}
+f1.obj <- c(13, 23, 30)
+
+
+# Each row represent Corns, Hops, Malt, Hours.
+f1.con <- matrix(c(5,15,10,
+                  4,4,4,
+                  35,20,15,
+                  5, 10, 20), nrow = 4, byrow = TRUE)
+
+# Create a list of directions
+f1.dir <- c("<=","<=","<=", "<=")
+
+# Create a list of right hand side for the constraints
+f1.rhs <- c(480,160,1190, 1200)
+
+sol1 <- lp("max", f1.obj, f1.con, f1.dir, f1.rhs,compute.sens = TRUE)
+
+
+```
+
+ * The optimum value of Hopatronics IPA and American Kolsch to maximize profit
+```{r sol1, echo=FALSE}
+# Compute optimum value for each beer
+Best_sol1 <- sol1$solution
+names(Best_sol1) <- c("Hopatronics IPA", "American Kolsch", "Dantzig") 
+print(Best_sol1)
+```
+ * The maximum profit at optimal point 
+```{r obj1, echo=FALSE}
+cat("Total profit: ", sol1$objval, sep="")
+```
+ * The duals of constraints and reduced costs of variables
+```{r duals1,echo=FALSE}
+sol1$duals
+```
+ * The sensitivity analysis of LP 
+```{r sa1, echo=FALSE}
+sol1$duals.from
+sol1$duals.to
+sol1$sens.coef.from
+sol1$sens.coef.to
+```
+
+
